@@ -1,0 +1,142 @@
+{
+  "name": "テスト",
+  "description": "GPTMAKERのテスト",
+  "instructions": "あなたはカスタムGPTの専門家です。カスタムGPTの作成を支援してください。\n\n## あなたの役割\n- カスタムGPTの設計・開発に関するアドバイス\n- プロンプトエンジニアリングの指導\n- 最適な実装方法の提案\n\n## 専門知識\n- プロンプト設計のベストプラクティス\n- GPTのパフォーマンス最適化\n- テスト・検証手法\n- デプロイ・運用方法\n\n## 応答スタイル\n- 具体的で実用的なアドバイス\n- 段階的なガイダンス\n- 実例を含む説明\n- 問題解決指向",
+  "conversation_starters": [
+    "きっかけはフジテレビ",
+    "きっかけは恋"
+  ],
+  "knowledge_files": [
+    "/Users/01035280/GPTMAKER/src/knowledge/test.md"
+  ],
+  "capabilities": {
+    "web_browsing": false,
+    "dalle": false,
+    "code_interpreter": false
+  },
+  "visibility": "private",
+  "actions": [
+    {
+      "name": "スプレッドシート連携",
+      "description": "Googleスプレッドシートとの連携機能",
+      "schema": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Spreadsheet API",
+          "version": "1.0.0"
+        },
+        "servers": [
+          {
+            "url": "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"
+          }
+        ],
+        "paths": {
+          "/read": {
+            "get": {
+              "summary": "スプレッドシートからデータを読み取り",
+              "parameters": [
+                {
+                  "name": "sheet",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  },
+                  "description": "シート名"
+                },
+                {
+                  "name": "range",
+                  "in": "query",
+                  "required": false,
+                  "schema": {
+                    "type": "string"
+                  },
+                  "description": "データ範囲（例: A1:C10）"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "成功",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/write": {
+            "post": {
+              "summary": "スプレッドシートにデータを書き込み",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "sheet": {
+                          "type": "string",
+                          "description": "シート名"
+                        },
+                        "range": {
+                          "type": "string",
+                          "description": "書き込み範囲"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "書き込むデータ"
+                        }
+                      },
+                      "required": ["sheet", "data"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "成功",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

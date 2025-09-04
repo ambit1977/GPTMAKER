@@ -186,6 +186,10 @@ class ChatGPTDeployer:
             # 機能設定
             if 'capabilities' in gpt_config:
                 self._configure_capabilities(gpt_config['capabilities'])
+            
+            # Action設定
+            if 'actions' in gpt_config:
+                self._configure_actions(gpt_config['actions'])
                 
             self.logger.info("カスタムGPT設定完了")
             return True
@@ -256,6 +260,66 @@ class ChatGPTDeployer:
                         
                 except NoSuchElementException:
                     self.logger.warning(f"機能設定が見つかりません: {capability}")
+                    
+    def _configure_actions(self, actions: list):
+        """Action設定"""
+        try:
+            # Actionsセクションまでスクロール
+            actions_section = self.driver.find_element(
+                By.XPATH, "//h3[contains(text(), 'Actions')]"
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView();", actions_section)
+            
+            for action in actions:
+                self.logger.info(f"Action設定開始: {action.get('name', 'Unnamed Action')}")
+                
+                # Create new actionボタンをクリック
+                create_action_button = self.wait.until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create new action')]"))
+                )
+                create_action_button.click()
+                time.sleep(2)
+                
+                # Action名を入力
+                if 'name' in action:
+                    name_input = self.wait.until(
+                        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Action name']"))
+                    )
+                    name_input.clear()
+                    name_input.send_keys(action['name'])
+                
+                # Action説明を入力
+                if 'description' in action:
+                    description_input = self.driver.find_element(
+                        By.XPATH, "//textarea[@placeholder='Action description']"
+                    )
+                    description_input.clear()
+                    description_input.send_keys(action['description'])
+                
+                # スキーマを入力
+                if 'schema' in action:
+                    schema_textarea = self.driver.find_element(
+                        By.XPATH, "//textarea[@placeholder='Schema']"
+                    )
+                    schema_textarea.clear()
+                    schema_textarea.send_keys(json.dumps(action['schema'], indent=2))
+                
+                # Saveボタンをクリック
+                save_action_button = self.driver.find_element(
+                    By.XPATH, "//button[contains(text(), 'Save')]"
+                )
+                save_action_button.click()
+                time.sleep(2)
+                
+                self.logger.info(f"Action設定完了: {action.get('name', 'Unnamed Action')}")
+                
+        except Exception as e:
+            self.logger.error(f"Action設定エラー: {e}")
+            # スクリーンショットを撮影（デバッグ用）
+            try:
+                self.driver.save_screenshot(f"action_error_{int(time.time())}.png")
+            except:
+                pass
                     
     def save_and_publish(self, visibility: str = "private") -> bool:
         """GPTを保存・公開"""
