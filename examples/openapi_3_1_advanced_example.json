@@ -1,0 +1,354 @@
+{
+  "name": "高度なAPI連携テスト",
+  "description": "OpenAPI 3.1の新機能を活用したAPI連携テスト",
+  "instructions": "あなたは最新のAPI仕様に対応したシステム統合の専門家です。OpenAPI 3.1の新機能を活用して、高度なAPI連携を支援してください。",
+  "conversation_starters": [
+    "OpenAPI 3.1の新機能について教えて",
+    "JSON Schemaとの統合方法は？",
+    "Webhookの設定方法を教えて",
+    "認証方式の選択肢は？"
+  ],
+  "knowledge_files": [],
+  "capabilities": {
+    "web_browsing": true,
+    "dalle": false,
+    "code_interpreter": true
+  },
+  "visibility": "private",
+  "actions": [
+    {
+      "name": "高度なデータ処理API",
+      "description": "OpenAPI 3.1の新機能を活用した高度なデータ処理",
+      "schema": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Advanced Data Processing API",
+          "version": "2.0.0",
+          "description": "OpenAPI 3.1の新機能を活用したデータ処理API",
+          "license": {
+            "name": "MIT",
+            "identifier": "MIT"
+          }
+        },
+        "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+        "servers": [
+          {
+            "url": "https://api.example.com/v2",
+            "description": "本番環境"
+          },
+          {
+            "url": "https://staging-api.example.com/v2",
+            "description": "ステージング環境"
+          }
+        ],
+        "paths": {
+          "/data/process": {
+            "post": {
+              "summary": "データ処理実行",
+              "description": "複雑なデータ処理を実行します",
+              "operationId": "processData",
+              "tags": ["data-processing"],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ProcessRequest"
+                    },
+                    "examples": {
+                      "simple": {
+                        "summary": "シンプルな処理例",
+                        "value": {
+                          "data": [1, 2, 3, 4, 5],
+                          "operation": "sum",
+                          "options": {
+                            "format": "json"
+                          }
+                        }
+                      },
+                      "complex": {
+                        "summary": "複雑な処理例", 
+                        "value": {
+                          "data": [
+                            {"id": 1, "value": 100},
+                            {"id": 2, "value": 200}
+                          ],
+                          "operation": "aggregate",
+                          "options": {
+                            "groupBy": "id",
+                            "format": "csv",
+                            "includeMetadata": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "処理成功",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProcessResponse"
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "リクエストエラー",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  }
+                },
+                "429": {
+                  "description": "レート制限",
+                  "headers": {
+                    "Retry-After": {
+                      "description": "リトライまでの秒数",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "security": [
+                {
+                  "BearerAuth": []
+                },
+                {
+                  "ApiKeyAuth": []
+                }
+              ]
+            }
+          },
+          "/webhooks/register": {
+            "post": {
+              "summary": "Webhook登録",
+              "description": "処理完了時のWebhook URLを登録",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/WebhookRegistration"
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "201": {
+                  "description": "Webhook登録成功",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "webhookId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": ["active", "inactive"]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "callbacks": {
+                "onComplete": {
+                  "{$request.body#/callbackUrl}": {
+                    "post": {
+                      "summary": "処理完了通知",
+                      "requestBody": {
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "$ref": "#/components/schemas/ProcessResponse"
+                            }
+                          }
+                        }
+                      },
+                      "responses": {
+                        "200": {
+                          "description": "通知受信確認"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "schemas": {
+            "ProcessRequest": {
+              "type": "object",
+              "required": ["data", "operation"],
+              "properties": {
+                "data": {
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    {
+                      "type": "array", 
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "integer"},
+                          "value": {"type": "number"}
+                        }
+                      }
+                    }
+                  ]
+                },
+                "operation": {
+                  "type": "string",
+                  "enum": ["sum", "average", "aggregate", "transform"]
+                },
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "format": {
+                      "type": "string",
+                      "enum": ["json", "csv", "xml"],
+                      "default": "json"
+                    },
+                    "groupBy": {
+                      "type": "string"
+                    },
+                    "includeMetadata": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "ProcessResponse": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "description": "処理結果"
+                },
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "processedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "処理時間（秒）"
+                    },
+                    "recordCount": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "WebhookRegistration": {
+              "type": "object",
+              "required": ["callbackUrl", "events"],
+              "properties": {
+                "callbackUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "コールバックURL"
+                },
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["process.completed", "process.failed", "process.started"]
+                  }
+                },
+                "secret": {
+                  "type": "string",
+                  "description": "署名検証用シークレット"
+                }
+              }
+            },
+            "ErrorResponse": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {"type": "string"},
+                          "issue": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "securitySchemes": {
+            "BearerAuth": {
+              "type": "http",
+              "scheme": "bearer",
+              "bearerFormat": "JWT"
+            },
+            "ApiKeyAuth": {
+              "type": "apiKey",
+              "in": "header",
+              "name": "X-API-Key"
+            }
+          }
+        },
+        "webhooks": {
+          "processComplete": {
+            "post": {
+              "summary": "処理完了Webhook",
+              "description": "データ処理が完了した際に送信されるWebhook",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ProcessResponse"
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Webhook受信確認"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

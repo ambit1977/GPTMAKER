@@ -22,7 +22,7 @@
 - **Action設定**: 1個
   - 名前: "スプレッドシート連携"
   - 説明: "Googleスプレッドシートとの連携機能" 
-  - API仕様: OpenAPI 3.0準拠、2つのエンドポイント
+  - API仕様: OpenAPI 3.1準拠、2つのエンドポイント
 
 ### 2. 自動化機能の実証
 
@@ -74,7 +74,7 @@ def _configure_actions(self, actions: list):
       "name": "スプレッドシート連携",
       "description": "Googleスプレッドシートとの連携機能",
       "schema": {
-        "openapi": "3.0.0",
+        "openapi": "3.1.0",
         "info": {...},
         "paths": {...}
       }
