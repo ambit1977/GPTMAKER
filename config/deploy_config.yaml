@@ -1,0 +1,36 @@
+# デプロイ設定
+
+# ChatGPT認証情報（環境変数または設定ファイルで指定）
+credentials:
+  email: ${CHATGPT_EMAIL}
+  password: ${CHATGPT_PASSWORD}
+
+# ブラウザ設定
+browser:
+  headless: true
+  window_size: "1920,1080"
+  wait_timeout: 30
+  page_load_timeout: 60
+
+# 自動化設定
+automation:
+  retry_count: 3
+  retry_delay: 5
+  screenshot_on_error: true
+  
+# ログ設定
+logging:
+  level: INFO
+  file: "logs/deployment.log"
+  format: "%(asctime)s - %(levelname)s - %(message)s"
+
+# 環境別設定
+environments:
+  development:
+    gpt_name_suffix: "-Dev"
+    auto_publish: false
+    
+  production:
+    gpt_name_suffix: ""
+    auto_publish: true
+    backup_before_update: true

@@ -1,0 +1,32 @@
+# ビルド設定
+
+gpt_name: "MyCustomGPT"
+description: "あなたの専門分野における信頼できるアシスタント"
+visibility: "private"  # private, link, public
+
+# プロンプトコンポーネント
+components:
+  role_definition: "src/prompts/role_definition.md"
+  instructions: "src/instructions/main_instructions.md"
+  examples: "src/examples/"
+  knowledge: "src/knowledge/"
+
+# GPT機能設定
+capabilities:
+  web_browsing: true
+  dalle: false
+  code_interpreter: true
+
+# 会話スターター（最大4個）
+conversation_starters:
+  - "何について相談したいですか？"
+  - "どのような支援が必要ですか？"
+  - "具体的な課題を教えてください"
+  - "まずは概要を説明してください"
+
+# デプロイ設定
+deploy_config:
+  headless: true
+  wait_timeout: 30
+  retry_count: 3
+  chrome_driver_path: "chromedriver"

@@ -1,0 +1,29 @@
+# 依存関係
+
+# Web自動化
+selenium==4.15.0
+webdriver-manager==4.0.1
+
+# データ処理
+PyYAML==6.0.1
+requests==2.31.0
+
+# テスト
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.3.1
+
+# 開発ツール
+black==23.9.1
+flake8==6.1.0
+isort==5.12.0
+
+# 監視・ログ
+python-dotenv==1.0.0
+
+# ファイル処理
+python-docx==0.8.11
+PyPDF2==3.0.1
+
+# 並行処理
+asyncio
